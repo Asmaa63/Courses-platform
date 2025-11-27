@@ -15,6 +15,9 @@ import {
 } from '@mui/icons-material';
 import Image from 'next/image';
 import { CourseDetails } from '@/types';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 
 interface CourseSidebarProps {
   course: CourseDetails;
@@ -23,6 +26,49 @@ interface CourseSidebarProps {
 
 export default function CourseSidebar({ course, locale }: CourseSidebarProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+  const currentLocale = useLocale();
+
+  const handleAddToCart = async () => {
+    if (!session) {
+      router.push(`/${currentLocale}/login`);
+      return;
+    }
+
+    setIsAddingToCart(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: course.id }),
+      });
+
+      if (response.ok) {
+        alert(locale === 'ar' ? 'تم إضافة الدورة للسلة' : 'Course added to cart');
+        router.refresh();
+      } else {
+        const data = await response.json();
+        alert(data.error || (locale === 'ar' ? 'حدث خطأ' : 'Error occurred'));
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert(locale === 'ar' ? 'حدث خطأ' : 'Error occurred');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!session) {
+      router.push(`/${currentLocale}/login`);
+      return;
+    }
+
+    await handleAddToCart();
+    router.push(`/${currentLocale}/cart`);
+  };
 
   const features = [
     {
@@ -75,19 +121,30 @@ export default function CourseSidebar({ course, locale }: CourseSidebarProps) {
               {course.originalPrice} {locale === 'ar' ? 'جنيه' : 'EGP'}
             </span>
           </div>
-          <div className="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
-            {Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}%{' '}
-            {locale === 'ar' ? 'خصم' : 'OFF'}
-          </div>
+          {course.originalPrice && course.originalPrice > course.price && (
+  <div className="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
+    {Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% {locale === 'ar' ? 'خصم' : 'OFF'}
+  </div>
+)}
         </div>
 
         {/* Action Buttons */}
         <div className="space-y-3 mb-6">
-          <button className="btn-primary w-full flex items-center justify-center gap-2">
+          <button 
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+            className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50"
+          >
             <ShoppingCart />
-            {locale === 'ar' ? 'أضف للسلة' : 'Add to Cart'}
+            {isAddingToCart
+              ? (locale === 'ar' ? 'جاري الإضافة...' : 'Adding...')
+              : (locale === 'ar' ? 'أضف للسلة' : 'Add to Cart')}
           </button>
-          <button className="btn-outline w-full">
+          <button 
+            onClick={handleBuyNow}
+            disabled={isAddingToCart}
+            className="btn-outline w-full disabled:opacity-50"
+          >
             {locale === 'ar' ? 'اشتري الآن' : 'Buy Now'}
           </button>
         </div>

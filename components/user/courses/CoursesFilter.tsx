@@ -4,40 +4,118 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { ExpandMore, Star } from '@mui/icons-material';
 
-export default function CoursesFilter() {
+interface CoursesFilterProps {
+  onFilterChange?: (filters: FilterState) => void;
+}
+
+export interface FilterState {
+  priceRange: [number, number];
+  categories: string[];
+  levels: string[];
+  rating: number | null;
+}
+
+export default function CoursesFilter({ onFilterChange }: CoursesFilterProps) {
   const locale = useLocale();
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
 
   const categories = [
-    { id: 'programming', name: locale === 'ar' ? 'البرمجة' : 'Programming', count: 450 },
-    { id: 'design', name: locale === 'ar' ? 'التصميم' : 'Design', count: 320 },
-    { id: 'business', name: locale === 'ar' ? 'الأعمال' : 'Business', count: 280 },
-    { id: 'marketing', name: locale === 'ar' ? 'التسويق' : 'Marketing', count: 210 },
-    { id: 'photography', name: locale === 'ar' ? 'التصوير' : 'Photography', count: 180 },
-    { id: 'music', name: locale === 'ar' ? 'الموسيقى' : 'Music', count: 150 },
+    { id: 'Programming', name: locale === 'ar' ? 'البرمجة' : 'Programming', count: 450 },
+    { id: 'Design', name: locale === 'ar' ? 'التصميم' : 'Design', count: 320 },
+    { id: 'Business', name: locale === 'ar' ? 'الأعمال' : 'Business', count: 280 },
+    { id: 'Marketing', name: locale === 'ar' ? 'التسويق' : 'Marketing', count: 210 },
+    { id: 'Security', name: locale === 'ar' ? 'الأمن السيبراني' : 'Security', count: 180 },
+    { id: 'AI', name: locale === 'ar' ? 'الذكاء الاصطناعي' : 'AI', count: 150 },
   ];
 
   const levels = [
-    { id: 'beginner', name: locale === 'ar' ? 'مبتدئ' : 'Beginner' },
-    { id: 'intermediate', name: locale === 'ar' ? 'متوسط' : 'Intermediate' },
-    { id: 'advanced', name: locale === 'ar' ? 'متقدم' : 'Advanced' },
+    { id: 'BEGINNER', name: locale === 'ar' ? 'مبتدئ' : 'Beginner' },
+    { id: 'INTERMEDIATE', name: locale === 'ar' ? 'متوسط' : 'Intermediate' },
+    { id: 'ADVANCED', name: locale === 'ar' ? 'متقدم' : 'Advanced' },
   ];
 
+  const handleFilterChange = () => {
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange,
+        categories: selectedCategories,
+        levels: selectedLevels,
+        rating: selectedRating,
+      });
+    }
+  };
+
   const toggleCategory = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
+    const newCategories = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter((id) => id !== categoryId)
+      : [...selectedCategories, categoryId];
+    setSelectedCategories(newCategories);
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange,
+        categories: newCategories,
+        levels: selectedLevels,
+        rating: selectedRating,
+      });
+    }
   };
 
   const toggleLevel = (levelId: string) => {
-    setSelectedLevels((prev) =>
-      prev.includes(levelId) ? prev.filter((id) => id !== levelId) : [...prev, levelId]
-    );
+    const newLevels = selectedLevels.includes(levelId)
+      ? selectedLevels.filter((id) => id !== levelId)
+      : [...selectedLevels, levelId];
+    setSelectedLevels(newLevels);
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange,
+        categories: selectedCategories,
+        levels: newLevels,
+        rating: selectedRating,
+      });
+    }
+  };
+
+  const handleRatingChange = (rating: number) => {
+    setSelectedRating(rating);
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange,
+        categories: selectedCategories,
+        levels: selectedLevels,
+        rating,
+      });
+    }
+  };
+
+  const handlePriceChange = (value: number) => {
+    const newRange: [number, number] = [0, value];
+    setPriceRange(newRange);
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange: newRange,
+        categories: selectedCategories,
+        levels: selectedLevels,
+        rating: selectedRating,
+      });
+    }
+  };
+
+  const resetFilters = () => {
+    setPriceRange([0, 1000]);
+    setSelectedCategories([]);
+    setSelectedLevels([]);
+    setSelectedRating(null);
+    if (onFilterChange) {
+      onFilterChange({
+        priceRange: [0, 1000],
+        categories: [],
+        levels: [],
+        rating: null,
+      });
+    }
   };
 
   return (
@@ -51,7 +129,7 @@ export default function CoursesFilter() {
             min="0"
             max="1000"
             value={priceRange[1]}
-            onChange={(e) => setPriceRange([0, Number(e.target.value)])}
+            onChange={(e) => handlePriceChange(Number(e.target.value))}
             className="w-full accent-primary-500"
           />
           <div className="flex items-center justify-between text-sm">
@@ -115,7 +193,7 @@ export default function CoursesFilter() {
           {[5, 4, 3, 2, 1].map((rating) => (
             <button
               key={rating}
-              onClick={() => setSelectedRating(rating)}
+              onClick={() => handleRatingChange(rating)}
               className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors ${
                 selectedRating === rating ? 'bg-primary-50' : 'hover:bg-neutral-50'
               }`}
@@ -139,7 +217,7 @@ export default function CoursesFilter() {
       </div>
 
       {/* Reset Button */}
-      <button className="w-full btn-outline">
+      <button onClick={resetFilters} className="w-full btn-outline">
         {locale === 'ar' ? 'إعادة تعيين الفلاتر' : 'Reset Filters'}
       </button>
     </div>

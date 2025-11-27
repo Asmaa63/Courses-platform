@@ -81,7 +81,7 @@ export default function HeroSection() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <Link href={`/${locale}/courses`} className="btn-primary w-full sm:w-auto">
+              <Link href={`/${locale}/user/courses`} className="btn-primary w-full sm:w-auto">
                 {locale === 'ar' ? 'استكشف الدورات' : 'Explore Courses'}
               </Link>
               <button className="btn-outline flex items-center gap-2 w-full sm:w-auto">

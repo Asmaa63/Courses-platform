@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -28,37 +28,10 @@ function getUserInitials(name: string) {
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
   const { data: session, status } = useSession();
-
-  // Fetch cart count
-  // Fetch cart count
-const fetchCartCount = async () => {
-  try {
-    const response = await fetch('/api/cart');
-    if (response.ok) {
-      const data = await response.json();
-      setCartCount(data.length);
-    }
-  } catch (error) {
-    console.error('Error fetching cart count:', error);
-  }
-};
-
-useEffect(() => {
-  if (!session) return;
-
-  const loadCart = async () => {
-    await fetchCartCount(); // جلب البيانات
-  };
-
-  loadCart(); // بدء العملية
-
-}, [session, pathname]);
-
 
   const toggleLocale = () => {
     const newLocale = locale === 'ar' ? 'en' : 'ar';
@@ -130,25 +103,23 @@ useEffect(() => {
                   className="relative p-2 hover:bg-neutral-100 rounded-lg transition-colors"
                 >
                   <ShoppingCart className="text-neutral-600" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 rtl:-left-1 rtl:right-auto bg-primary-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
+                  <span className="absolute -top-1 -right-1 rtl:-left-1 rtl:right-auto bg-primary-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                    0
+                  </span>
                 </Link>
 
                 {/* Profile Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center space-x-3 rtl:space-x-reverse p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                    className="flex items-center space-x-3 rtl:space-x-reverse p-2 hover:bg-neutral-300 rounded-lg transition-colors "
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm bg-blue-500">
+                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm border-50% bg-blue-600">
                       {session.user?.name && getUserInitials(session.user.name)}
                     </div>
                     <div className="hidden xl:block text-left rtl:text-right">
                       <p className="text-sm font-semibold text-neutral-900">{session.user?.name}</p>
-                      <p className="text-xs text-neutral-500">{session.user?.role}</p>
+                      {/* <p className="text-xs text-neutral-500">{session.user?.role}</p> */}
                     </div>
                   </button>
 
@@ -179,7 +150,7 @@ useEffect(() => {
 
                       <Link
                         href={`/${locale}/user/profile`}
-                        className="flex items-center space-x-3 rtl:space-x-reverse px-4 py-2 hover:bg-neutral-50 transition-colors"
+                        className="flex items-center space-x-3 rtl:space-x-reverse px-4 py-2 hover:bg-neutral-50 transition-colors "
                       >
                         <Person className="text-neutral-600 text-xl" />
                         <span className="text-neutral-700">{t('nav.profile')}</span>
@@ -289,4 +260,3 @@ useEffect(() => {
     </nav>
   );
 }
-

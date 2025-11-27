@@ -21,19 +21,19 @@ export default function Footer() {
 
   const footerLinks = {
     company: [
-      { label: locale === 'ar' ? 'عن المنصة' : 'About Us', href: `/${locale}/about` },
-      { label: locale === 'ar' ? 'تواصل معنا' : 'Contact', href: `/${locale}/contact` },
-      { label: locale === 'ar' ? 'الوظائف' : 'Careers', href: `/${locale}/careers` },
-      { label: locale === 'ar' ? 'المدونة' : 'Blog', href: `/${locale}/blog` },
+      { label: locale === 'ar' ? 'عن المنصة' : 'About Us', href: `/${locale}/user/about` },
+      { label: locale === 'ar' ? 'تواصل معنا' : 'Contact', href: `/${locale}/user/contact` },
+      { label: locale === 'ar' ? 'الوظائف' : 'Careers', href: `/${locale}/user/careers` },
+      { label: locale === 'ar' ? 'المدونة' : 'Blog', href: `/${locale}/user/blog` },
     ],
     courses: [
-      { label: locale === 'ar' ? 'جميع الدورات' : 'All Courses', href: `/${locale}/courses` },
-      { label: locale === 'ar' ? 'البرمجة' : 'Programming', href: `/${locale}/courses?category=programming` },
-      { label: locale === 'ar' ? 'التصميم' : 'Design', href: `/${locale}/courses?category=design` },
-      { label: locale === 'ar' ? 'الأعمال' : 'Business', href: `/${locale}/courses?category=business` },
+      { label: locale === 'ar' ? 'جميع الدورات' : 'All Courses', href: `/${locale}/user/courses` },
+      { label: locale === 'ar' ? 'البرمجة' : 'Programming', href: `/${locale}/user/courses?category=programming` },
+      { label: locale === 'ar' ? 'التصميم' : 'Design', href: `/${locale}/user/courses?category=design` },
+      { label: locale === 'ar' ? 'الأعمال' : 'Business', href: `/${locale}/user/courses?category=business` },
     ],
     support: [
-      { label: locale === 'ar' ? 'مركز المساعدة' : 'Help Center', href: `/${locale}/help` },
+      { label: locale === 'ar' ? 'مركز المساعدة' : 'Help Center', href: `/${locale}/user/help` },
       { label: locale === 'ar' ? 'الأسئلة الشائعة' : 'FAQ', href: `/${locale}/faq` },
       { label: locale === 'ar' ? 'الشروط والأحكام' : 'Terms', href: `/${locale}/terms` },
       { label: locale === 'ar' ? 'سياسة الخصوصية' : 'Privacy', href: `/${locale}/privacy` },
@@ -55,7 +55,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href={`/${locale}/home`} className="flex items-center space-x-2 rtl:space-x-reverse mb-6">
+            <Link href={`/${locale}/user/home`} className="flex items-center space-x-2 rtl:space-x-reverse mb-6">
               <School className="text-primary-400 text-4xl" />
               <span className="text-2xl font-display font-bold">
                 {locale === 'ar' ? 'أكاديمية' : 'Academy'}

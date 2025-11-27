@@ -139,7 +139,7 @@ export default function FeaturedCourses() {
           className="text-center"
         >
           <Link
-            href={`/${locale}/courses`}
+            href={`/${locale}/user/courses`}
             className="inline-flex items-center gap-2 btn-outline group"
           >
             {locale === 'ar' ? 'عرض جميع الدورات' : 'View All Courses'}
