@@ -25,10 +25,14 @@ export default function CourseCurriculum({ curriculum, locale }: CourseCurriculu
     0
   );
   const totalDuration = curriculum.reduce(
-    (acc, section) =>
-      acc + section.lessons.reduce((sum: number, lesson: any) => sum + lesson.duration, 0),
-    0
-  );
+  (acc, section) =>
+    acc +
+    section.lessons.reduce(
+      (sum: number, lesson: Lesson) => sum + lesson.duration,
+      0
+    ),
+  0
+);
 
   return (
     <div className="card">

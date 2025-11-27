@@ -17,12 +17,12 @@ export default function CourseContent({ course, locale }: CourseContentProps) {
           {locale === 'ar' ? 'ماذا ستتعلم' : 'What You Will Learn'}
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {course.whatYouWillLearn.map((item: string, index: number) => (
-            <div key={index} className="flex items-start gap-3">
-              <CheckCircle className="text-green-500 flex-shrink-0 mt-1" />
-              <span className="text-neutral-700">{item}</span>
-            </div>
-          ))}
+          {course.whatYouWillLearn?.map((item: string, index: number) => (
+  <div key={index} className="flex items-start gap-3">
+    <CheckCircle className="text-green-500 flex-shrink-0 mt-1" />
+    <span className="text-neutral-700">{item}</span>
+  </div>
+))}
         </div>
       </div>
 
@@ -56,12 +56,12 @@ export default function CourseContent({ course, locale }: CourseContentProps) {
           {locale === 'ar' ? 'المتطلبات' : 'Requirements'}
         </h2>
         <ul className="space-y-2">
-          {course.requirements.map((req: string, index: number) => (
-            <li key={index} className="flex items-start gap-3">
-              <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></span>
-              <span className="text-neutral-700">{req}</span>
-            </li>
-          ))}
+          {course.requirements?.map((req: string, index: number) => (
+  <li key={index} className="flex items-start gap-3">
+    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></span>
+    <span className="text-neutral-700">{req}</span>
+  </li>
+))}
         </ul>
       </div>
     </div>
