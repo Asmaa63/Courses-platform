@@ -5,56 +5,37 @@ import CourseInstructor from '@/components/user/courses/CourseInstructor';
 import CourseReviews from '@/components/user/courses/CourseReviews';
 import CourseSidebar from '@/components/user/courses/CourseSidebar';
 import RelatedCourses from '@/components/user/courses/RelatedCourses';
+import { notFound } from 'next/navigation';
 
 export default async function CourseDetailsPage({
   params,
 }: {
-  params: Promise<{ locale: string; id: string }>;
+  params: { locale: string; id: string };
 }) {
-  const { locale, id } = await params;
+  const { locale, id } = params;
 
-  // Mock data - في الواقع هيجي من API
-  const course = {
-    id: '1',
-    title: 'Complete Web Development Bootcamp',
-    titleAr: 'دورة تطوير الويب الشاملة',
-    description:
-      'Learn web development from scratch with this comprehensive bootcamp. Master HTML, CSS, JavaScript, React, Node.js, and more!',
-    descriptionAr:
-      'تعلم تطوير الويب من الصفر مع هذه الدورة الشاملة. احترف HTML, CSS, JavaScript, React, Node.js والمزيد!',
-    price: 499,
-    originalPrice: 999,
-    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800',
+  // Fetch course from API
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/courses/${id}`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    notFound();
+  }
+
+  const course = await response.json();
+
+  // Transform data for components
+  const courseDetails = {
+    ...course,
+    originalPrice: course.price * 2,
     videoPreview: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    category: 'Programming',
-    level: 'BEGINNER' as const,
-    duration: 40,
-    lessonsCount: 120,
-    studentsCount: 15420,
-    rating: 4.8,
     reviewsCount: 3240,
     lastUpdated: '2024-01',
     language: locale === 'ar' ? 'العربية' : 'Arabic & English',
-    instructor: {
-      id: '1',
-      name: 'Ahmed Hassan',
-      title: locale === 'ar' ? 'مطور ويب محترف' : 'Professional Web Developer',
-      bio:
-        locale === 'ar'
-          ? 'مطور ويب بخبرة أكثر من 10 سنوات في مجال تطوير التطبيقات. عمل مع شركات كبرى وساعد آلاف الطلاب في تحقيق أحلامهم.'
-          : 'Web developer with over 10 years of experience in application development. Worked with major companies and helped thousands of students achieve their dreams.',
-      image: 'https://i.pravatar.cc/150?img=1',
-      studentsCount: 45000,
-      coursesCount: 12,
-      rating: 4.9,
-    },
     whatYouWillLearn: [
-      locale === 'ar'
-        ? 'بناء مواقع ويب كاملة من الصفر'
-        : 'Build complete websites from scratch',
-      locale === 'ar'
-        ? 'احتراف HTML, CSS, JavaScript'
-        : 'Master HTML, CSS, JavaScript',
+      locale === 'ar' ? 'بناء مواقع ويب كاملة من الصفر' : 'Build complete websites from scratch',
+      locale === 'ar' ? 'احتراف HTML, CSS, JavaScript' : 'Master HTML, CSS, JavaScript',
       locale === 'ar' ? 'تطوير تطبيقات React متقدمة' : 'Develop advanced React applications',
       locale === 'ar' ? 'بناء APIs باستخدام Node.js' : 'Build APIs using Node.js',
       locale === 'ar' ? 'التعامل مع قواعد البيانات' : 'Work with databases',
@@ -69,7 +50,7 @@ export default async function CourseDetailsPage({
       {
         id: '1',
         title: locale === 'ar' ? 'مقدمة في تطوير الويب' : 'Introduction to Web Development',
-        lessons: [
+        lessons: course.lessons || [
           {
             id: '1-1',
             title: locale === 'ar' ? 'ما هو تطوير الويب؟' : 'What is Web Development?',
@@ -165,21 +146,26 @@ export default async function CourseDetailsPage({
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <CourseHeader course={course} locale={locale} />
-      
+      <CourseHeader course={courseDetails} locale={locale} />
+
       <div className="container-custom py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            <CourseContent course={course} locale={locale} />
-            <CourseCurriculum curriculum={course.curriculum} locale={locale} />
-            <CourseInstructor instructor={course.instructor} locale={locale} />
-            <CourseReviews reviews={course.reviews} rating={course.rating} reviewsCount={course.reviewsCount} locale={locale} />
+            <CourseContent course={courseDetails} locale={locale} />
+            <CourseCurriculum curriculum={courseDetails.curriculum} locale={locale} />
+            <CourseInstructor instructor={courseDetails.instructor} locale={locale} />
+            <CourseReviews
+              reviews={courseDetails.reviews}
+              rating={courseDetails.rating}
+              reviewsCount={courseDetails.reviewsCount}
+              locale={locale}
+            />
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <CourseSidebar course={course} locale={locale} />
+            <CourseSidebar course={courseDetails} locale={locale} />
           </div>
         </div>
       </div>

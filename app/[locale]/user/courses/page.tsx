@@ -1,185 +1,174 @@
 'use client';
 
-import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import CourseCard from '../../../../components/common/CourseCard';
-import CoursesFilter from '../../../../components/user/courses/CoursesFilter';
+import CourseCard from '@/components/common/CourseCard';
+import CoursesFilter from '@/components/user/courses/CoursesFilter';
 import { Search, Tune } from '@mui/icons-material';
+import { Course } from '@/types';
+
+interface CoursesResponse {
+  courses: Course[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 export default function CoursesPage() {
   const locale = useLocale();
   const t = useTranslations();
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<{
+    categories: string[];
+    levels: string[];
+    priceRange: [number, number];
+    rating: number | null;
+  }>({
+    categories: [],
+    levels: [],
+    priceRange: [0, 1000],
+    rating: null,
+  });
+  
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 12,
+    totalPages: 0,
+  });
 
-  // Mock data - في الواقع هيجي من API
-  const courses = [
-    {
-      id: '1',
-      title: 'Complete Web Development Bootcamp',
-      titleAr: 'دورة تطوير الويب الشاملة',
-      description: 'Learn HTML, CSS, JavaScript, React and more',
-      descriptionAr: 'تعلم HTML, CSS, JavaScript, React والمزيد',
-      price: 499,
-      thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600',
-      category: 'Programming',
-      level: 'BEGINNER' as const,
-      duration: 40,
-      lessonsCount: 120,
-      studentsCount: 15420,
-      rating: 4.8,
-      instructor: {
-        id: '1',
-        name: 'Ahmed Hassan',
-        image: 'https://i.pravatar.cc/150?img=1',
-      },
-    },
-    {
-      id: '2',
-      title: 'UI/UX Design Masterclass',
-      titleAr: 'دورة تصميم واجهات المستخدم',
-      description: 'Master Figma, Adobe XD, and design principles',
-      descriptionAr: 'احترف Figma و Adobe XD ومبادئ التصميم',
-      price: 399,
-      thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600',
-      category: 'Design',
-      level: 'INTERMEDIATE' as const,
-      duration: 30,
-      lessonsCount: 85,
-      studentsCount: 8750,
-      rating: 4.9,
-      instructor: {
-        id: '2',
-        name: 'Sara Mohamed',
-        image: 'https://i.pravatar.cc/150?img=5',
-      },
-    },
-    {
-      id: '3',
-      title: 'Digital Marketing Complete Guide',
-      titleAr: 'دليل التسويق الرقمي الشامل',
-      description: 'SEO, Social Media, Content Marketing & More',
-      descriptionAr: 'SEO, السوشيال ميديا، التسويق بالمحتوى والمزيد',
-      price: 349,
-      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600',
-      category: 'Marketing',
-      level: 'BEGINNER' as const,
-      duration: 25,
-      lessonsCount: 70,
-      studentsCount: 12300,
-      rating: 4.7,
-      instructor: {
-        id: '3',
-        name: 'Omar Ali',
-        image: 'https://i.pravatar.cc/150?img=3',
-      },
-    },
-    {
-      id: '4',
-      title: 'Python Programming for Beginners',
-      titleAr: 'برمجة بايثون للمبتدئين',
-      description: 'Start your programming journey with Python',
-      descriptionAr: 'ابدأ رحلتك البرمجية مع لغة بايثون',
-      price: 299,
-      thumbnail: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=600',
-      category: 'Programming',
-      level: 'BEGINNER' as const,
-      duration: 20,
-      lessonsCount: 60,
-      studentsCount: 18900,
-      rating: 4.9,
-      instructor: {
-        id: '4',
-        name: 'Mahmoud Khalil',
-        image: 'https://i.pravatar.cc/150?img=4',
-      },
-    },
-    {
-      id: '5',
-      title: 'Data Science & Machine Learning',
-      titleAr: 'علم البيانات والتعلم الآلي',
-      description: 'Learn Python, Statistics, ML Algorithms',
-      descriptionAr: 'تعلم بايثون والإحصاء وخوارزميات التعلم الآلي',
-      price: 599,
-      thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600',
-      category: 'Programming',
-      level: 'ADVANCED' as const,
-      duration: 50,
-      lessonsCount: 150,
-      studentsCount: 9800,
-      rating: 4.8,
-      instructor: {
-        id: '5',
-        name: 'Dr. Laila Ahmed',
-        image: 'https://i.pravatar.cc/150?img=10',
-      },
-    },
-    {
-      id: '6',
-      title: 'Mobile App Development with React Native',
-      titleAr: 'تطوير تطبيقات الموبايل مع React Native',
-      description: 'Build iOS and Android apps with React Native',
-      descriptionAr: 'بناء تطبيقات iOS و Android باستخدام React Native',
-      price: 449,
-      thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600',
-      category: 'Programming',
-      level: 'INTERMEDIATE' as const,
-      duration: 35,
-      lessonsCount: 100,
-      studentsCount: 11200,
-      rating: 4.7,
-      instructor: {
-        id: '6',
-        name: 'Youssef Ibrahim',
-        image: 'https://i.pravatar.cc/150?img=7',
-      },
-    },
-  ];
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: pagination.page.toString(),
+          limit: pagination.limit.toString(),
+        });
+
+        if (searchQuery) {
+          params.append('search', searchQuery);
+        }
+
+        if (filters.categories.length > 0) {
+          params.append('category', filters.categories[0]);
+        }
+
+        if (filters.levels.length > 0) {
+          params.append('level', filters.levels[0]);
+        }
+
+        const response = await fetch(`/api/courses?${params}`);
+        const data: CoursesResponse = await response.json();
+
+        setCourses(data.courses);
+        setPagination(data.pagination);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounce = setTimeout(() => {
+      fetchCourses();
+    }, 500);
+
+    return () => clearTimeout(debounce);
+  }, [searchQuery, pagination.page, filters]);
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Header Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16">
-        <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            {locale === 'ar' ? 'جميع الدورات التدريبية' : 'All Courses'}
-          </h1>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl">
-            {locale === 'ar'
-              ? 'اكتشف مجموعة واسعة من الدورات التدريبية في مختلف المجالات'
-              : 'Discover a wide range of training courses in various fields'}
-          </p>
+      {/* Header */}
+      <section className="relative py-20 overflow-hidden text-center select-none">
+  {/* Animated Gradient Background */}
+  <motion.div
+    className="absolute inset-0"
+    initial={{ background: 'linear-gradient(135deg, #0E1A30, #1F3555)' }}
+    animate={{
+      background: [
+        'linear-gradient(130deg, #0E1A30, #1F3555)',
+        'linear-gradient(140deg, #132544, #234D77)',
+        'linear-gradient(150deg, #0F2238, #183B65)',
+        'linear-gradient(130deg, #0E1A30, #1F3555)'
+      ]
+    }}
+    transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+  />
 
-          {/* Search Bar */}
-          <div className="max-w-3xl">
-            <div className="bg-white rounded-2xl shadow-xl p-2 flex items-center gap-2">
-              <Search className="text-neutral-400 mx-3" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={locale === 'ar' ? 'ابحث عن دورة...' : 'Search for a course...'}
-                className="flex-1 px-2 py-3 outline-none text-neutral-700"
-              />
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden btn-primary flex items-center gap-2"
-              >
-                <Tune />
-                {locale === 'ar' ? 'تصفية' : 'Filter'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+  {/* Floating Splash Colors */}
+  <motion.div
+    className="absolute w-[550px] h-[550px] rounded-full blur-[130px] opacity-30 bg-primary-500"
+    initial={{ x: -220, y: -150 }}
+    animate={{ x: 220, y: 80 }}
+    transition={{ duration: 18, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+  />
+  <motion.div
+    className="absolute w-[550px] h-[550px] rounded-full blur-[150px] opacity-25 bg-secondary-500"
+    initial={{ x: 240, y: 160 }}
+    animate={{ x: -250, y: -120 }}
+    transition={{ duration: 22, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+  />
+
+  {/* Content */}
+  <div className="container-custom relative z-10">
+    <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-white leading-snug">
+      {locale === 'ar' ? 'جميع الدورات التدريبية' : 'All Courses'}
+    </h1>
+
+    <p className="text-lg text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
+      {locale === 'ar'
+        ? 'اكتشف مجموعة واسعة من الدورات التدريبية في مختلف المجالات'
+        : 'Discover a wide range of training courses in various fields'}
+    </p>
+
+    {/* Search */}
+    <motion.div
+      className="max-w-3xl mx-auto"
+      animate={{ boxShadow: [
+        '0 0 15px rgba(255,255,255,0.08)',
+        '0 0 28px rgba(255,255,255,0.18)',
+        '0 0 15px rgba(255,255,255,0.08)'
+      ]}}
+      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-2 flex items-center gap-2 transition duration-300 hover:bg-white/20 hover:border-white/40">
+        <Search className="text-white/60 mx-3" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={locale === 'ar' ? 'ابحث عن دورة...' : 'Search for a course...'}
+          className="flex-1 px-2 py-3 bg-transparent outline-none text-white placeholder-white/60"
+        />
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="lg:hidden bg-secondary-500 hover:bg-secondary-600 transition text-white font-semibold px-4 py-2 rounded-xl flex items-center gap-2 shadow-md"
+        >
+          <Tune />
+          {locale === 'ar' ? 'تصفية' : 'Filter'}
+        </button>
+      </div>
+    </motion.div>
+  </div>
+</section>
+
 
       {/* Main Content */}
       <section className="section-padding">
         <div className="container-custom">
           <div className="flex gap-8">
-            {/* Sidebar Filters - Desktop */}
+            {/* Sidebar */}
             <aside className="hidden lg:block w-80 flex-shrink-0">
-              <CoursesFilter />
+              <CoursesFilter onFilterChange={setFilters} />
             </aside>
 
             {/* Mobile Filters */}
@@ -194,7 +183,7 @@ export default function CoursesPage() {
                       <h3 className="text-xl font-bold">{locale === 'ar' ? 'تصفية' : 'Filters'}</h3>
                       <button onClick={() => setShowFilters(false)} className="text-2xl">×</button>
                     </div>
-                    <CoursesFilter />
+                    <CoursesFilter onFilterChange={setFilters} />
                   </div>
                 </div>
               </div>
@@ -206,41 +195,76 @@ export default function CoursesPage() {
               <div className="flex items-center justify-between mb-6">
                 <p className="text-neutral-600">
                   {locale === 'ar' ? 'عرض' : 'Showing'}{' '}
-                  <span className="font-semibold text-neutral-900">{courses.length}</span>{' '}
+                  <span className="font-semibold text-neutral-900">{pagination.total}</span>{' '}
                   {locale === 'ar' ? 'دورة' : 'courses'}
                 </p>
                 <select className="input w-auto">
                   <option>{locale === 'ar' ? 'الأحدث' : 'Newest'}</option>
                   <option>{locale === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}</option>
                   <option>{locale === 'ar' ? 'الأعلى تقييماً' : 'Highest Rated'}</option>
-                  <option>{locale === 'ar' ? 'السعر: من الأقل للأعلى' : 'Price: Low to High'}</option>
-                  <option>{locale === 'ar' ? 'السعر: من الأعلى للأقل' : 'Price: High to Low'}</option>
                 </select>
               </div>
 
-              {/* Courses Grid */}
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {courses.map((course) => (
-                  <CourseCard key={course.id} course={course} locale={locale} />
-                ))}
-              </div>
+              {/* Loading State */}
+              {loading ? (
+                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="card animate-pulse">
+                      <div className="h-48 bg-neutral-200 rounded-xl mb-4"></div>
+                      <div className="h-4 bg-neutral-200 rounded mb-2"></div>
+                      <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : courses.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-neutral-600 text-lg">
+                    {locale === 'ar' ? 'لا توجد دورات' : 'No courses found'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Grid */}
+                  <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {courses.map((course) => (
+                      <CourseCard key={course.id} course={course} locale={locale} />
+                    ))}
+                  </div>
 
-              {/* Pagination */}
-              <div className="mt-12 flex justify-center gap-2">
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 hover:border-primary-500 transition-colors">
-                  ←
-                </button>
-                <button className="w-10 h-10 rounded-lg bg-primary-500 text-white">1</button>
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 hover:border-primary-500 transition-colors">
-                  2
-                </button>
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 hover:border-primary-500 transition-colors">
-                  3
-                </button>
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 hover:border-primary-500 transition-colors">
-                  →
-                </button>
-              </div>
+                  {/* Pagination */}
+                  {pagination.totalPages > 1 && (
+                    <div className="mt-12 flex justify-center gap-2">
+                      <button
+                        onClick={() => setPagination({ ...pagination, page: Math.max(1, pagination.page - 1) })}
+                        disabled={pagination.page === 1}
+                        className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 disabled:opacity-50"
+                      >
+                        ←
+                      </button>
+                      {[...Array(pagination.totalPages)].map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPagination({ ...pagination, page: i + 1 })}
+                          className={`w-10 h-10 rounded-lg ${
+                            pagination.page === i + 1
+                              ? 'bg-primary-500 text-white'
+                              : 'border border-neutral-300 hover:bg-primary-50'
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setPagination({ ...pagination, page: Math.min(pagination.totalPages, pagination.page + 1) })}
+                        disabled={pagination.page === pagination.totalPages}
+                        className="w-10 h-10 rounded-lg border border-neutral-300 hover:bg-primary-50 disabled:opacity-50"
+                      >
+                        →
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

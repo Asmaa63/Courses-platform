@@ -34,7 +34,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError(locale === 'ar' ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة' : 'Invalid email or password');
       } else {
-        router.push(`/${locale}/home`);
+        router.push(`/${locale}/user/home`);
       }
     } catch (error) {
       setError(locale === 'ar' ? 'حدث خطأ ما. حاول مرة أخرى.' : 'Something went wrong. Try again.');

@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "cross-env NEXT_SERVER_MODE=WEBPACK next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -46,6 +50,7 @@
     "eslint-config-next": "^16.0.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
