@@ -8,14 +8,13 @@ import RelatedCourses from '@/components/user/courses/RelatedCourses';
 import { notFound } from 'next/navigation';
 
 
-interface CoursePageProps {
-  params: {
-    locale: string; 
-    id: string; 
-  };
-} 
-export default async function CourseDetailsPage({ params }: CoursePageProps) {
-    const { locale, id } = params;
+
+export default async function CourseDetailsPage({
+  params,
+}: {
+  params: { locale: string; id: string };
+}) {
+  const { locale, id } = params;
 
   // Fetch course from API
   const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/courses/${id}`, {
