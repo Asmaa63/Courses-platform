@@ -174,22 +174,22 @@ export default function RegisterPage() {
             {locale === 'ar' ? (
               <>
                 أوافق على{' '}
-                <Link href={`/${locale}/terms`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/user/terms`} className="text-primary-600 hover:underline">
                   الشروط والأحكام
                 </Link>{' '}
                 و{' '}
-                <Link href={`/${locale}/privacy`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/user/privacy`} className="text-primary-600 hover:underline">
                   سياسة الخصوصية
                 </Link>
               </>
             ) : (
               <>
                 I agree to the{' '}
-                <Link href={`/${locale}/terms`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/user/terms`} className="text-primary-600 hover:underline">
                   Terms & Conditions
                 </Link>{' '}
                 and{' '}
-                <Link href={`/${locale}/privacy`} className="text-primary-600 hover:underline">
+                <Link href={`/${locale}/user/privacy`} className="text-primary-600 hover:underline">
                   Privacy Policy
                 </Link>
               </>

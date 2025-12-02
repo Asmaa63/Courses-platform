@@ -121,7 +121,7 @@ export default function ProfilePage() {
                       : 'Start your learning journey by enrolling in a course'}
                   </p>
                   <button
-                    onClick={() => router.push(`/${locale}/courses`)}
+                    onClick={() => router.push(`/${locale}/user/courses`)}
                     className="btn-primary"
                   >
                     {locale === 'ar' ? 'تصفح الدورات' : 'Browse Courses'}

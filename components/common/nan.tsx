@@ -131,7 +131,7 @@ export default function Navbar() {
                       </div>
                       
                       <Link
-                        href={`/${locale}/my-learning`}
+                        href={`/${locale}/user/my-learning`}
                         className="flex items-center space-x-3 rtl:space-x-reverse px-4 py-2 hover:bg-neutral-50 transition-colors"
                       >
                         <School className="text-neutral-600 text-xl" />
@@ -217,7 +217,7 @@ export default function Navbar() {
               {session ? (
                 <>
                   <Link
-                    href={`/${locale}/my-learning`}
+                    href={`/${locale}/user/my-learning`}
                     className="px-4 py-3 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-colors"
                   >
                     {t('nav.myLearning')}

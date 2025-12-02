@@ -32,30 +32,29 @@ export default function MyLearningPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  if (status === 'unauthenticated') {
-    router.push(`/${locale}/login`);
-    return;
-  }
+    if (status === 'unauthenticated') {
+      router.push(`/${locale}/login`);
+      return;
+    }
 
-  if (status === 'authenticated') {
-    const fetchEnrollments = async () => {
-      try {
-        // TODO: API call
-        // const res = await fetch(`/api/enrollments`);
-        // const data = await res.json();
-        // setEnrollments(data);
+    if (status === 'authenticated') {
+      fetchEnrollments();
+    }
+  }, [status, locale, router]);
 
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+  const fetchEnrollments = async () => {
+    try {
+      const response = await fetch('/api/enrollments');
+      if (response.ok) {
+        const data = await response.json();
+        setEnrollments(data);
       }
-    };
-
-    fetchEnrollments();
-  }
-}, [status, locale, router]);
-
+    } catch (error) {
+      console.error('Error fetching enrollments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (status === 'loading' || loading) {
     return (
@@ -83,7 +82,7 @@ export default function MyLearningPage() {
                 ? 'ابدأ رحلتك التعليمية بالاشتراك في دورة من مكتبتنا الواسعة'
                 : 'Start your learning journey by enrolling in a course from our extensive library'}
             </p>
-            <Link href={`/${locale}/courses`} className="btn-primary inline-block">
+            <Link href={`/${locale}/user/courses`} className="btn-primary inline-block">
               {locale === 'ar' ? 'تصفح الدورات' : 'Browse Courses'}
             </Link>
           </div>
@@ -100,7 +99,7 @@ export default function MyLearningPage() {
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Link
-                      href={`/${locale}/course/${enrollment.course.id}/learn`}
+                      href={`/${locale}/user/course/${enrollment.course.id}/learn`}
                       className="btn-primary flex items-center gap-2"
                     >
                       <PlayCircle />

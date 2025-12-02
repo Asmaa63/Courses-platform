@@ -7,7 +7,7 @@ export default function AboutHero() {
   const isAr = locale === 'ar';
 
   return (
-    <section className="relative py-20 lg:py-28 overflow-hidden text-center select-none">
+    <section className="relative py-10 lg:py-28 overflow-hidden text-center select-none">
       {/* Gradient Background Animation */}
       <motion.div
         className="absolute inset-0"

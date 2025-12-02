@@ -96,7 +96,7 @@ export default function CartPage() {
                 ? 'ابدأ بإضافة دورات إلى سلتك'
                 : 'Start adding courses to your cart'}
             </p>
-            <Link href={`/${locale}/courses`} className="btn-primary inline-block">
+            <Link href={`/${locale}/user/courses`} className="btn-primary inline-block">
               {locale === 'ar' ? 'تصفح الدورات' : 'Browse Courses'}
             </Link>
           </div>
@@ -115,7 +115,7 @@ export default function CartPage() {
                       className="rounded-lg object-cover"
                     />
                     <div className="flex-1">
-                      <Link href={`/${locale}/course/${item.course.id}`}>
+                      <Link href={`/${locale}/user/course/${item.course.id}`}>
                         <h3 className="font-bold text-neutral-900 mb-2 hover:text-primary-600">
                           {locale === 'ar' ? item.course.titleAr : item.course.title}
                         </h3>
@@ -161,9 +161,9 @@ export default function CartPage() {
                     <span>{total} {locale === 'ar' ? 'جنيه' : 'EGP'}</span>
                   </div>
                 </div>
-                <button className="btn-primary w-full">
-                  {locale === 'ar' ? 'إتمام الشراء' : 'Checkout'}
-                </button>
+                <Link href={`/${locale}/user/checkout`} className="btn-primary w-full">
+  {locale === 'ar' ? 'إتمام الشراء' : 'Checkout'}
+</Link>
               </div>
             </div>
           </div>

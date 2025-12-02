@@ -194,10 +194,12 @@ export default function CoursesPage() {
               {/* Results Header */}
               <div className="flex items-center justify-between mb-6">
                 <p className="text-neutral-600">
-                  {locale === 'ar' ? 'عرض' : 'Showing'}{' '}
-                  <span className="font-semibold text-neutral-900">{pagination.total}</span>{' '}
-                  {locale === 'ar' ? 'دورة' : 'courses'}
-                </p>
+  {locale === 'ar' ? 'عرض' : 'Showing'}{' '}
+  <span className="font-semibold text-neutral-900">
+    {pagination?.total ?? 0}
+  </span>{' '}
+  {locale === 'ar' ? 'دورة' : 'courses'}
+</p>
                 <select className="input w-auto">
                   <option>{locale === 'ar' ? 'الأحدث' : 'Newest'}</option>
                   <option>{locale === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}</option>

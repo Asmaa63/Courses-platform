@@ -126,7 +126,7 @@ export default function CategoriesSection() {
               transition={{ delay: index * 0.05 }}
             >
               <Link
-                href={`/${locale}/courses?category=${category.nameEn.toLowerCase()}`}
+                href={`/${locale}/user/courses?category=${category.nameEn.toLowerCase()}`}
                 className={`block ${category.bgColor} rounded-2xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group`}
               >
                 <div

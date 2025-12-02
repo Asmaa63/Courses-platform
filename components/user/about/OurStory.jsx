@@ -50,7 +50,7 @@ export default function OurStory() {
   };
 
   return (
-    <section className="relative py-20 lg:py-28 bg-neutral-50 overflow-hidden">
+    <section className="relative py-10 lg:py-28 bg-neutral-50 overflow-hidden">
       {/* عناصر زخرفية في الخلفية */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary-50/50 to-transparent pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary-50 rounded-full blur-3xl opacity-30 pointer-events-none" />

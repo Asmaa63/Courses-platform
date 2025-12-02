@@ -34,9 +34,9 @@ export default function Footer() {
     ],
     support: [
       { label: locale === 'ar' ? 'مركز المساعدة' : 'Help Center', href: `/${locale}/user/help` },
-      { label: locale === 'ar' ? 'الأسئلة الشائعة' : 'FAQ', href: `/${locale}/faq` },
-      { label: locale === 'ar' ? 'الشروط والأحكام' : 'Terms', href: `/${locale}/terms` },
-      { label: locale === 'ar' ? 'سياسة الخصوصية' : 'Privacy', href: `/${locale}/privacy` },
+      { label: locale === 'ar' ? 'الأسئلة الشائعة' : 'FAQ', href: `/${locale}/user/faq` },
+      { label: locale === 'ar' ? 'الشروط والأحكام' : 'Terms', href: `/${locale}/user/terms` },
+      { label: locale === 'ar' ? 'سياسة الخصوصية' : 'Privacy', href: `/${locale}/user/privacy` },
     ],
   };
 
@@ -199,21 +199,21 @@ export default function Footer() {
             </p>
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
               <Link
-                href={`/${locale}/terms`}
+                href={`/${locale}/user/terms`}
                 className="text-neutral-400 hover:text-primary-400 text-sm transition-colors"
               >
                 {locale === 'ar' ? 'الشروط' : 'Terms'}
               </Link>
               <span className="text-neutral-600">•</span>
               <Link
-                href={`/${locale}/privacy`}
+                href={`/${locale}/user/privacy`}
                 className="text-neutral-400 hover:text-primary-400 text-sm transition-colors"
               >
                 {locale === 'ar' ? 'الخصوصية' : 'Privacy'}
               </Link>
               <span className="text-neutral-600">•</span>
               <Link
-                href={`/${locale}/cookies`}
+                href={`/${locale}/user/cookies`}
                 className="text-neutral-400 hover:text-primary-400 text-sm transition-colors"
               >
                 {locale === 'ar' ? 'الكوكيز' : 'Cookies'}
