@@ -45,45 +45,47 @@ export default function CoursesPage() {
   });
 
   // Fetch courses from API
-  useEffect(() => {
-    const fetchCourses = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: pagination.page.toString(),
-          limit: pagination.limit.toString(),
-        });
+  // 1. استعمل Optional Chaining عند الوصول للقيم في الـ Array
+useEffect(() => {
+  const fetchCourses = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        // تأكد إن فيه قيمة دايماً حتى لو الـ state باظت
+        page: (pagination?.page || 1).toString(),
+        limit: (pagination?.limit || 12).toString(),
+      });
 
-        if (searchQuery) {
-          params.append('search', searchQuery);
-        }
+      if (searchQuery) params.append('search', searchQuery);
+      
+      filters.categories.forEach((cat) => params.append('category', cat));
+      filters.levels.forEach((lvl) => params.append('level', lvl));
 
-        if (filters.categories.length > 0) {
-          params.append('category', filters.categories[0]);
-        }
+      const response = await fetch(`/api/courses?${params}`);
+      const data: CoursesResponse = await response.json();
 
-        if (filters.levels.length > 0) {
-          params.append('level', filters.levels[0]);
-        }
-
-        const response = await fetch(`/api/courses?${params}`);
-        const data: CoursesResponse = await response.json();
-
+      // تأكد إن الداتا رجعت فعلاً قبل ما تعمل set
+      if (data && data.courses) {
         setCourses(data.courses);
-        setPagination(data.pagination);
-      } catch (error) {
-        console.error('Error fetching courses:', error);
-      } finally {
-        setLoading(false);
       }
-    };
+      if (data && data.pagination) {
+        setPagination(data.pagination);
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const debounce = setTimeout(() => {
-      fetchCourses();
-    }, 500);
+  const debounce = setTimeout(() => {
+    fetchCourses();
+  }, 500);
 
-    return () => clearTimeout(debounce);
-  }, [searchQuery, pagination.page, filters]);
+  return () => clearTimeout(debounce);
+  
+  // راقب pagination.page فقط وليس الـ object كامل لتجنب الـ Infinite Loop
+}, [searchQuery, pagination?.page, filters]);
 
   return (
     <div className="min-h-screen bg-neutral-50">

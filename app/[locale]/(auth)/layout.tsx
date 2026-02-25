@@ -22,7 +22,7 @@ export default async function AuthLayout({
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <Link
-          href={`/${locale}/home`}
+          href={`/${locale}/user/home`}
           className="flex items-center justify-center space-x-2 rtl:space-x-reverse mb-8"
         >
           <School className="text-primary-500 text-5xl" />

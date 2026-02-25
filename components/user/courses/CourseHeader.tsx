@@ -30,11 +30,22 @@ interface Course {
 }
 
 interface CourseHeaderProps {
-  course: Course;
+  course: Course | null | undefined;
   locale: string;
 }
 
 export default function CourseHeader({ course, locale }: CourseHeaderProps) {
+  // Protection
+  if (!course) {
+    return (
+      <section className="text-white p-10">
+        Loading course...
+      </section>
+    );
+  }
+
+  const safeLevel: CourseLevel = course.level ?? 'BEGINNER';
+
   const levelColors: Record<CourseLevel, string> = {
     BEGINNER: 'bg-green-100 text-green-700',
     INTERMEDIATE: 'bg-yellow-100 text-yellow-700',
@@ -51,7 +62,8 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
     <section className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white py-12">
       <div className="container-custom">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
-          {/* Left Content */}
+
+          {/* LEFT */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -63,7 +75,7 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
               <span>/</span>
               <span>{locale === 'ar' ? 'الدورات' : 'Courses'}</span>
               <span>/</span>
-              <span className="text-white">{course.category}</span>
+              <span className="text-white">{course?.category ?? ''}</span>
             </div>
 
             {/* Title */}
@@ -76,16 +88,18 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
               {locale === 'ar' ? course.descriptionAr : course.description}
             </p>
 
-            {/* Meta Info */}
+            {/* Meta */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
               {/* Rating */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <Star className="text-yellow-400" />
-                  <span className="font-bold">{course.rating}</span>
+                  <span className="font-bold">
+                    {course.rating ?? 0}
+                  </span>
                 </div>
                 <span className="text-white/70">
-                  ({course.reviewsCount.toLocaleString()}{' '}
+                  ({(course.reviewsCount ?? 0).toLocaleString()}{" "}
                   {locale === 'ar' ? 'تقييم' : 'reviews'})
                 </span>
               </div>
@@ -94,14 +108,14 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
               <div className="flex items-center gap-2 text-white/70">
                 <People className="text-xl" />
                 <span>
-                  {course.studentsCount.toLocaleString()}{' '}
+                  {(course.studentsCount ?? 0).toLocaleString()}{" "}
                   {locale === 'ar' ? 'طالب' : 'students'}
                 </span>
               </div>
 
               {/* Level */}
-              <span className={`badge ${levelColors[course.level]}`}>
-                {levelLabels[course.level]}
+              <span className={`badge ${levelColors[safeLevel]}`}>
+                {levelLabels[safeLevel]}
               </span>
             </div>
 
@@ -110,21 +124,21 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
               <div className="flex items-center gap-2">
                 <Update className="text-lg" />
                 <span>
-                  {locale === 'ar' ? 'آخر تحديث:' : 'Last updated:'}{' '}
-                  {course.lastUpdated}
+                  {locale === 'ar' ? 'آخر تحديث:' : 'Last updated:'}{" "}
+                  {course.lastUpdated ?? ''}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Language className="text-lg" />
-                <span>{course.language}</span>
+                <span>{course.language ?? ''}</span>
               </div>
             </div>
 
             {/* Instructor */}
             <div className="flex items-center gap-3 mt-6 pt-6 border-t border-white/20">
               <Image
-                src={course.instructor.image}
-                alt={course.instructor.name}
+                src={course?.instructor?.image ?? '/default-user.jpg'}
+                alt={course?.instructor?.name ?? 'Instructor'}
                 width={48}
                 height={48}
                 className="rounded-full"
@@ -133,12 +147,14 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
                 <p className="text-sm text-white/70">
                   {locale === 'ar' ? 'المدرب' : 'Instructor'}
                 </p>
-                <p className="font-semibold">{course.instructor.name}</p>
+                <p className="font-semibold">
+                  {course?.instructor?.name ?? ''}
+                </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Right Preview */}
+          {/* RIGHT */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -147,8 +163,8 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
               <Image
-                src={course.thumbnail}
-                alt={course.title}
+                src={course?.thumbnail ?? '/default-thumbnail.jpg'}
+                alt={course?.title ?? 'Thumbnail'}
                 width={600}
                 height={400}
                 className="w-full"
@@ -160,6 +176,7 @@ export default function CourseHeader({ course, locale }: CourseHeaderProps) {
               </div>
             </div>
           </motion.div>
+
         </div>
       </div>
     </section>

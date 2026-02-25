@@ -1,32 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const category = searchParams.get('category');
-    const level = searchParams.get('level');
+
+    const categories = searchParams.getAll('category');
+    const levels = searchParams.getAll('level');
     const search = searchParams.get('search');
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
     const skip = (page - 1) * limit;
 
-    // Build filter object
-    const where: {
-      published: boolean;
-      category?: string;
-      level?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
-      OR?: Array<{ title: { contains: string; mode: 'insensitive' } } | { titleAr: { contains: string; mode: 'insensitive' } }>;
-    } = {
+    const where: Prisma.CourseWhereInput = {
       published: true,
     };
 
-    if (category) {
-      where.category = category;
+    if (categories.length > 0) {
+      where.category = { in: categories };
     }
 
-    if (level) {
-      where.level = level as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+    if (levels.length > 0) {
+      where.level = {
+        in: levels as Array<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'>,
+      };
     }
 
     if (search) {
@@ -36,7 +35,6 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Get courses with instructor info
     const [courses, total] = await Promise.all([
       prisma.course.findMany({
         where,
@@ -55,6 +53,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
+
       prisma.course.count({ where }),
     ]);
 

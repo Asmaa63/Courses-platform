@@ -78,7 +78,7 @@ useEffect(() => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href={`/${locale}/home`} className="flex items-center space-x-2 rtl:space-x-reverse">
+          <Link href={`/${locale}/user/home`} className="flex items-center space-x-2 rtl:space-x-reverse">
             <School className="text-primary-500 text-4xl" />
             <span className="text-2xl font-display font-bold gradient-text">
               {locale === 'ar' ? 'أكاديمية' : 'Academy'}

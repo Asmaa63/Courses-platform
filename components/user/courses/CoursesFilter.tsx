@@ -159,7 +159,7 @@ export default function CoursesFilter({ onFilterChange }: CoursesFilterProps) {
                 />
                 <span className="text-neutral-700">{category.name}</span>
               </div>
-              <span className="text-sm text-neutral-500">({category.count})</span>
+              {/* <span className="text-sm text-neutral-500">({category.count})</span> */}
             </label>
           ))}
         </div>

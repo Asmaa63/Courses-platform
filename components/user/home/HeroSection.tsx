@@ -19,7 +19,7 @@ export default function HeroSection() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
       </div>
 
-      <div className="container-custom relative z-10 py-20 lg:py-28">
+      <div className="container-custom relative z-10 py-10 lg:py-18">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <motion.div

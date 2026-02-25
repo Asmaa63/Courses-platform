@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
@@ -47,22 +47,13 @@ export default function CourseLearnPage({
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [paramsData, setParamsData] = useState<{ locale: string; id: string } | null>(null);
 
+  // Load params
   useEffect(() => {
     params.then((data) => setParamsData(data));
   }, [params]);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push(`/${locale}/login`);
-      return;
-    }
-
-    if (status === 'authenticated' && paramsData) {
-      fetchCourse();
-    }
-  }, [status, paramsData, locale, router]);
-
-  const fetchCourse = async () => {
+  // Fetch course function (declared BEFORE useEffect)
+  const fetchCourse = useCallback(async () => {
     if (!paramsData) return;
 
     try {
@@ -70,6 +61,7 @@ export default function CourseLearnPage({
       if (response.ok) {
         const data = await response.json();
         setCourse(data);
+
         if (data.lessons.length > 0) {
           setCurrentLesson(data.lessons[0]);
         }
@@ -77,11 +69,22 @@ export default function CourseLearnPage({
     } catch (error) {
       console.error('Error fetching course:', error);
     }
-  };
+  }, [paramsData]);
 
+  // Auth & Data loading
+  useEffect(() => {
+  if (status === 'authenticated' && paramsData) {
+    const load = async () => {
+      await fetchCourse();
+    };
+    load();
+  }
+}, [status, paramsData, locale, router, fetchCourse]);
+
+  // Mark lesson as complete
   const markAsComplete = (lessonId: string) => {
     if (!completedLessons.includes(lessonId)) {
-      setCompletedLessons([...completedLessons, lessonId]);
+      setCompletedLessons((prev) => [...prev, lessonId]);
     }
   };
 
